@@ -2,6 +2,12 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .DVA import DVA
 
+@api_view(['GET'])
+def view(request):
+    response = dict()
+
+    return Response(response)
+
 @api_view(['POST'])
 def start(request):
     """Handles a start request"""
@@ -20,6 +26,9 @@ def start(request):
 
 @api_view(['POST'])
 def move(request):
+
+    print(request.data)
+
     """Handles a move request"""
     # print 'move()'
     data = request.data
