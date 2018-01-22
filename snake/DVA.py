@@ -73,17 +73,20 @@ class DVA(object):
         nearest_food = self.BLACKBOARD['nearest_food']
         nearest_snake = self.BLACKBOARD['nearest_snake']
 
+        current_farthest_node = self.GRAPH.farthest_node(self.BLACKBOARD['snake_head_coord'])
+        current_farthest_path = self.__find_path(snake_head, current_farthest_node)
         current_path_to_tail = self.__find_path(
             snake_head,
             snake_tail
         )
 
-        path = current_path_to_tail
+        path = None
 
-        if self.BLACKBOARD['snake']['health'] < 50:
-            (nearest_food_cost, nearest_food_coord) = nearest_food
-
+        if self.BLACKBOARD['snake']['health'] <= 50:
+            nearest_food_cost = nearest_food[0]
+            nearest_food_coord = nearest_food[1]
             nearest_snake_food_cost = sys.maxsize
+            potential_path = None
 
             if nearest_snake is not None:
                 nearest_snake_object = nearest_snake[1]
@@ -97,22 +100,27 @@ class DVA(object):
                 )
 
             if nearest_food_cost < nearest_snake_food_cost:
-                path = self.__find_path(
+                potential_path = self.__find_path(
                     snake_head,
                     nearest_food_coord
                 )
 
-            if path:
-                next_coord = path[0]
+            if potential_path:
+                future_coord = potential_path[0]
+                future_farthest_node = self.GRAPH.farthest_node(future_coord)
+                future_farthest_path = self.__find_path(snake_head, future_farthest_node)
 
-                future_path_to_tail = self.__find_path(next_coord, snake_tail)
+                print(current_farthest_node, future_farthest_node)
+                print(len(current_farthest_path), len(future_farthest_path))
 
-                if not future_path_to_tail:
-                    path = current_path_to_tail
+                if len(future_farthest_path) >= len(current_farthest_path) - 1:
+                    path = potential_path
 
         if not path:
-            coord_2 = self.GRAPH.farthest_node(self.BLACKBOARD['snake_head_coord'])
-            path = self.__find_path(snake_head, coord_2)
+            if current_path_to_tail:
+                path = current_path_to_tail
+            else:
+                path = current_farthest_path
 
         next_coord = path[0]
 
