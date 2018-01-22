@@ -100,20 +100,18 @@ class DVA(object):
         else:
             path = current_path_to_tail
 
-        # If no path to food exists, check if the next position can get back to the tail
-        if len(path) > 0:
+        # If path to food exists, check if the next position can get back to the tail
+        if path:
             next_coord = path[0]
 
             future_path_to_tail = self.__find_path(next_coord, snake_tail)
 
-            if len(future_path_to_tail) == 0 and len(current_path_to_tail) > 0:
+            if not future_path_to_tail and current_path_to_tail:
                 path = current_path_to_tail
-            else:
-                path = []
-        elif len(path) == 0 and len(current_path_to_tail) > 0:
+        elif not path and current_path_to_tail:
             path = current_path_to_tail
 
-        if len(path) == 0:
+        if not path:
             coord_2 = self.GRAPH.farthest_node(self.BLACKBOARD['snake_head_coord'])
             path = self.__find_path(snake_head, coord_2)
 
@@ -193,6 +191,9 @@ class DVA(object):
         lowest_cost = -1
         lowest_cost_snake = None
 
+        if not enemy_snakes:
+            return
+
         for snake in enemy_snakes:
             coord_2 = snake['coords'][0]
             cost = self.GRAPH.cost(coord_1, coord_2)
@@ -208,6 +209,9 @@ class DVA(object):
         coord_1 = self.BLACKBOARD['snake_head_coord']
         lowest_cost_coord = None
         lowest_cost = -1
+
+        if not food:
+            return
 
         for food_coord in food:
             coord_2 = (food_coord[0], food_coord[1])

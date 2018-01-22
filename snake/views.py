@@ -1,14 +1,12 @@
+import json
 from rest_framework.decorators import api_view
+from rest_framework.decorators import parser_classes
 from rest_framework.response import Response
+from rest_framework.parsers import JSONParser
 from .DVA import DVA
 
-@api_view(['GET'])
-def view(request):
-    response = dict()
-
-    return Response(response)
-
 @api_view(['POST'])
+@parser_classes((JSONParser,))
 def start(request):
     """Handles a start request"""
     data = request.data
@@ -25,13 +23,25 @@ def start(request):
     return Response(response)
 
 @api_view(['POST'])
+@parser_classes((JSONParser,))
 def move(request):
-
-    print(request.data)
-
     """Handles a move request"""
     # print 'move()'
     data = request.data
+    data['snakes'] = data['snakes']['data']
+
+    data['you'] = data['you']['id']
+
+    for snake in data['snakes']:
+        snake['coords'] = snake['body']['data']
+
+        for index, coord in enumerate(snake['coords']):
+            snake['coords'][index] = [coord['x'], coord['y']]
+
+    data['food'] = data['food']['data']
+
+    for index, food in enumerate(data['food']):
+        data['food'][index] = [food['x'], food['y']]
 
     dva = DVA()
     dva.init(data)
