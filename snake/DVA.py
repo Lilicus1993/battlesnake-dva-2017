@@ -1,8 +1,8 @@
 """Represents the snake AI with personality D.Va"""
+import sys
 import random
 from .Graph import Graph
-from .a_star import a_star_search, alt_a_star_search
-import time
+from .a_star import a_star_search
 
 class DVA(object):
     """Represents the Battlesnake D.Va"""
@@ -73,43 +73,42 @@ class DVA(object):
         nearest_food = self.BLACKBOARD['nearest_food']
         nearest_snake = self.BLACKBOARD['nearest_snake']
 
-        (nearest_food_cost, nearest_food_coord) = nearest_food
-
-        if nearest_snake is not None:
-            (nearest_snake_cost, nearest_snake_object) = nearest_snake
-            nearest_snake_head = (
-                nearest_snake_object['coords'][0][0],
-                nearest_snake_object['coords'][0][1]
-            )
-
-            nearest_food_nearest_snake_cost = self.GRAPH.cost(
-                nearest_food_coord,
-                nearest_snake_head
-            )
-
         current_path_to_tail = self.__find_path(
             snake_head,
             snake_tail
         )
 
-        if nearest_snake is None or nearest_food_cost < nearest_food_nearest_snake_cost:
-            path = self.__find_path(
-                snake_head,
-                nearest_food_coord
-            )
-        else:
-            path = current_path_to_tail
+        path = current_path_to_tail
 
-        # If path to food exists, check if the next position can get back to the tail
-        if path:
-            next_coord = path[0]
+        if self.BLACKBOARD['snake']['health'] < 50:
+            (nearest_food_cost, nearest_food_coord) = nearest_food
 
-            future_path_to_tail = self.__find_path(next_coord, snake_tail)
+            nearest_snake_food_cost = sys.maxsize
 
-            if not future_path_to_tail and current_path_to_tail:
-                path = current_path_to_tail
-        elif not path and current_path_to_tail:
-            path = current_path_to_tail
+            if nearest_snake is not None:
+                nearest_snake_object = nearest_snake[1]
+                nearest_snake_head = (
+                    nearest_snake_object['coords'][0][0],
+                    nearest_snake_object['coords'][0][1]
+                )
+                nearest_snake_food_cost = self.GRAPH.cost(
+                    nearest_food_coord,
+                    nearest_snake_head
+                )
+
+            if nearest_food_cost < nearest_snake_food_cost:
+                path = self.__find_path(
+                    snake_head,
+                    nearest_food_coord
+                )
+
+            if path:
+                next_coord = path[0]
+
+                future_path_to_tail = self.__find_path(next_coord, snake_tail)
+
+                if not future_path_to_tail:
+                    path = current_path_to_tail
 
         if not path:
             coord_2 = self.GRAPH.farthest_node(self.BLACKBOARD['snake_head_coord'])
@@ -121,9 +120,6 @@ class DVA(object):
             next_coord[0] - self.BLACKBOARD['snake_head_coord'][0],
             next_coord[1] - self.BLACKBOARD['snake_head_coord'][1]
         )
-
-        # end = time.time()
-        # print "get_move() runtime: %.3f" % (end - start)
 
         if diff == (0, 1):
             return 'down'
