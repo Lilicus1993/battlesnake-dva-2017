@@ -30,8 +30,6 @@ def move(request):
     data = request.data
     data['snakes'] = data['snakes']['data']
 
-    print(request.data)
-
     data['you'] = data['you']['id']
 
     for snake in data['snakes']:
