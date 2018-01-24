@@ -1,7 +1,8 @@
 """Represents the snake AI with personality D.Va"""
+
 import sys
 import random
-from .Graph import Graph
+from .graph import Graph
 from .a_star import a_star_search
 
 class DVA(object):
@@ -110,9 +111,6 @@ class DVA(object):
                 future_farthest_node = self.GRAPH.farthest_node(future_coord)
                 future_farthest_path = self.__find_path(snake_head, future_farthest_node)
 
-                print(current_farthest_node, future_farthest_node)
-                print(len(current_farthest_path), len(future_farthest_path))
-
                 if len(future_farthest_path) >= len(current_farthest_path) - 1:
                     path = potential_path
 
@@ -145,8 +143,6 @@ class DVA(object):
 
     def update(self, data):
         """Updates object based on Battlesnake turn data"""
-        # start = time.time()
-        # Check if we're initialized, if not, init
         if not self.INIT:
             self.init(data)
 
@@ -164,9 +160,6 @@ class DVA(object):
 
         if nearest_food is not None:
             self.BLACKBOARD['nearest_food'] = nearest_food
-
-        # end = time.time()
-        # print "update() runtime: %.3f" % (end - start)
 
         return
 

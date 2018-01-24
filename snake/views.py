@@ -1,9 +1,10 @@
-import json
+"""Django views"""
+
 from rest_framework.decorators import api_view
 from rest_framework.decorators import parser_classes
 from rest_framework.response import Response
 from rest_framework.parsers import JSONParser
-from .DVA import DVA
+from .dva import DVA
 
 @api_view(['POST'])
 @parser_classes((JSONParser,))
@@ -26,9 +27,10 @@ def start(request):
 @parser_classes((JSONParser,))
 def move(request):
     """Handles a move request"""
-    # print 'move()'
     data = request.data
     data['snakes'] = data['snakes']['data']
+
+    print(request.data)
 
     data['you'] = data['you']['id']
 
