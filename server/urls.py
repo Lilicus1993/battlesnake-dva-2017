@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-import views
+from server import views
 
 urlpatterns = [
     url(r'^start', views.start),

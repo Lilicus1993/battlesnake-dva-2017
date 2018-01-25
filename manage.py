@@ -7,7 +7,7 @@ from django.core.management.commands.runserver import Command as runserver
 import netifaces
 
 if __name__ == "__main__":
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "server.settings")
 
     if not os.environ.get('IS_PRODUCTION', False):
         ASSIGNED_IP = netifaces.ifaddresses('en0')[netifaces.AF_INET][0]['addr']
