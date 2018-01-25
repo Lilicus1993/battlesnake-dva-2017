@@ -12,7 +12,7 @@ class DVA(object):
     INIT = False
 
     NAME = 'D.Va'
-    IMAGE_URL = 'static/d_va.png'
+    IMAGE_URL = '../static/d_va.png'
     COLOR = '#EE4BB5'
     TAUNTS = {
         'set_up': {
