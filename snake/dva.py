@@ -2,8 +2,8 @@
 
 import sys
 import random
-from .graph import Graph
-from .a_star import a_star_search
+from .helpers.graph import Graph
+from .helpers.pathfinding import a_star
 
 class DVA(object):
     """Represents the Battlesnake D.Va"""
@@ -225,7 +225,7 @@ class DVA(object):
     def __find_path(self, node_1, node_2):
         """Updates the A* pathing logic"""
         # Obtain path mapping based on graph and start/end points
-        came_from = a_star_search(
+        came_from = a_star(
             self.GRAPH,
             node_1,
             node_2

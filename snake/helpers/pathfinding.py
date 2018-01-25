@@ -8,7 +8,7 @@ def heuristic(coord_1, coord_2):
     (x_coord_2, y_coord_2) = coord_2
     return abs(x_coord_1 - x_coord_2) + abs(y_coord_1 - y_coord_2)
 
-def a_star_search(graph, start_node, goal_node):
+def a_star(graph, start_node, goal_node):
     """Determines a good path from start to goal based on heuristic"""
     to_visit = PriorityQueue()
     to_visit.put((0, start_node))
