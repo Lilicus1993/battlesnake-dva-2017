@@ -2,8 +2,8 @@
 
 import sys
 import random
-from .helpers.graph import Graph
-from .helpers.pathfinding import a_star
+from game.helpers.graph import Graph
+from game.helpers.pathfinding import a_star
 
 class DVA(object):
     """Represents the Battlesnake D.Va"""
@@ -41,8 +41,9 @@ class DVA(object):
 
     GRAPH = Graph()
 
-    def __init__(self):
-        return
+    def __init__(self, data):
+        """Initializes object based on Battlesnake game data"""
+        self.GRAPH.init(data['width'], data['height'])
 
     def get_name(self):
         """Return snake name"""
@@ -136,16 +137,9 @@ class DVA(object):
         else:
             return 'left'
 
-    def init(self, data):
-        """Initializes object based on Battlesnake game data"""
-        self.GRAPH.init(data['width'], data['height'])
-        return
-
     def update(self, data):
         """Updates object based on Battlesnake turn data"""
-        if not self.INIT:
-            self.init(data)
-
+        self.GRAPH.init(data['width'], data['height'])
         self.BLACKBOARD['snakes'] = data['snakes']
         self.BLACKBOARD['food'] = data['food']
         self.__update_self(data['you'], data['snakes'])
