@@ -16,10 +16,10 @@ def start(request):
     dva = game.dva
 
     response = dict(
-        color=dva.get_color(),
+        color=dva.COLOR,
         taunt=dva.get_random_taunt('set_up'),
-        head_url="%s%s" % (request.build_absolute_uri('/'), dva.get_image_url()),
-        name=dva.get_name()
+        head_url="%s%s" % (request.build_absolute_uri('/'), dva.IMAGE_URL),
+        name=dva.NAME
     )
 
     return Response(response)

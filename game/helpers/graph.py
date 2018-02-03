@@ -1,33 +1,26 @@
 """A graph used for A* pathfinding"""
 
+import game.helpers.pathfinding as pathfinding
+
 class Graph(object):
     """Class representing a Graph"""
     inaccessible_nodes = []
     width = -1
     height = -1
 
-    def __init__(self):
-        return
-
-    def init(self, width, height):
-        """Initializes the graph"""
+    def __init__(self, width, height):
         self.width = width
         self.height = height
 
     def update(self, blackboard):
         """Updates graph based on blackboard data"""
-        self.inaccessible_nodes = []
-        snakes = blackboard['snakes']
+        self.inaccessible_nodes = list()
 
-        for snake in snakes:
+        for snake in blackboard['snakes']:
             coords = snake['coords']
 
-            for index in range(len(coords) - 1):
-                coord = coords[index]
-                x_coord = coord[0]
-                y_coord = coord[1]
-                self.inaccessible_nodes.append((x_coord, y_coord))
-
+            for i in range(len(coords) - 1):
+                self.inaccessible_nodes.append(coords[i])
 
     def neighbors(self, node):
         """Returns a list of neighbors of the parameter node"""
@@ -39,11 +32,33 @@ class Graph(object):
                 results.append(neighbor)
         return results
 
-    def cost(self, node_1, node_2):
-        """Returns cost of navigating between two nodes"""
-        (x_coord_1, y_coord_1) = node_1
-        (x_coord_2, y_coord_2) = node_2
-        return abs(x_coord_1 - x_coord_2) + abs(y_coord_1 - y_coord_2)
+    def find_path(self, node_1, node_2):
+        """Updates the A* pathing logic"""
+        # Obtain path mapping based on graph and start/end points
+        path = pathfinding.a_star(
+            self,
+            node_1,
+            node_2
+        )
+
+        return path
+
+    def find_closest(self, node_1, nodes):
+        """Finds the closest node amongst a list of nodes"""
+        lowest_cost_node = None
+        lowest_cost = -1
+
+        if not nodes:
+            return
+
+        for node_2 in nodes:
+            cost = pathfinding.cost(node_1, node_2)
+
+            if lowest_cost == -1 or lowest_cost > cost:
+                lowest_cost_node = node_2
+                lowest_cost = cost
+
+        return lowest_cost_node
 
     def farthest_node(self, node_1):
         """Get a farthest point given a node"""
@@ -52,12 +67,22 @@ class Graph(object):
         highest_cost = -1
 
         for node_2 in nodes:
-            cost = self.cost(node_1, node_2)
+            cost = pathfinding.cost(node_1, node_2)
             if cost > highest_cost:
                 highest_cost_node = node_2
                 highest_cost = cost
 
         return highest_cost_node
+
+    def is_node_in_bounds(self, node):
+        """Make sure node is in bounds"""
+
+        if node[0] < 0 or node[0] >= self.width:
+            return False
+        elif node[1] < 0 or node[1] >= self.height:
+            return False
+        else:
+            return True
 
     def __flood_fill(self, node):
         """Flood fills based on current node"""
@@ -76,14 +101,3 @@ class Graph(object):
                     results.append(neighbor)
                     nodes.append(neighbor)
         return results
-
-    def is_node_in_bounds(self, node):
-        """Make sure node is in bounds"""
-        (x_coord, y_coord) = node
-
-        if x_coord < 0 or x_coord >= self.width:
-            return False
-        elif y_coord < 0 or y_coord >= self.height:
-            return False
-        else:
-            return True
