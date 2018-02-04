@@ -1,5 +1,6 @@
 """A* algorithm based on http://www.redblobgames.com/pathfinding/a-star/implementation.html"""
 
+import sys
 from queue import PriorityQueue
 
 def cost(node_1, node_2):
@@ -33,11 +34,47 @@ def a_star(graph, start_node, goal_node):
 
     return __build_path(start_node, goal_node, came_from)
 
+def find_path(graph, start_node, goal_node, algorithm = a_star):
+    """Find path between two nodes in a given algorithm"""
+    return algorithm(graph, start_node, goal_node)
+
+def find_closest_node(node_1, nodes):
+    """Finds the closest node amongst a list of nodes"""
+    lowest_cost_node = None
+    lowest_cost = sys.maxsize
+
+    if not nodes:
+        return lowest_cost_node
+
+    for node_2 in nodes:
+        current_cost = cost(node_1, node_2)
+
+        if lowest_cost > current_cost:
+            lowest_cost_node = node_2
+            lowest_cost = current_cost
+
+    return lowest_cost_node
+
+def find_farthest_node(graph, node_1):
+    """Get a farthest point given a node"""
+    nodes = __flood_fill(graph, node_1)
+    highest_cost_node = None
+    highest_cost = 0
+
+    for node_2 in nodes:
+        current_cost = cost(node_1, node_2)
+
+        if current_cost > highest_cost:
+            highest_cost_node = node_2
+            highest_cost = current_cost
+
+    return highest_cost_node
+
 def __build_path(start_node, goal_node, nodes):
     """Builds a path from start to goal node based on graph of nodes"""
     # Build path array based on path mapping
     current_node = goal_node
-    path = []
+    path = list()
 
     while current_node != start_node:
         # If node is not in mapping, no path exists
@@ -46,9 +83,25 @@ def __build_path(start_node, goal_node, nodes):
             current_node = nodes[current_node]
         else:
             # Set path to empty if no path exists and exit
-            path = []
+            path = list()
             break
 
     path.reverse()
 
     return path
+
+def __flood_fill(graph, node):
+    """Flood fills based on current node"""
+    results = [node]
+    nodes = [node]
+
+    while len(nodes) > 0:
+        current_node = nodes.pop()
+        neighbors = graph.neighbors(current_node)
+
+        for neighbor in neighbors:
+            if neighbor not in results:
+                results.append(neighbor)
+                nodes.append(neighbor)
+
+    return results

@@ -27,8 +27,8 @@ class DVA(object):
     BLACKBOARD = {
         'id': '',
         'snake': dict(),
-        'nearest_snake': None,
-        'nearest_food': None,
+        'nearest_snake': dict(),
+        'nearest_food': (0, 0),
         'snakes': list(),
         'enemy_snakes': list(),
         'food': list(),
@@ -57,9 +57,20 @@ class DVA(object):
         nearest_food = self.BLACKBOARD['nearest_food']
         nearest_snake = self.BLACKBOARD['nearest_snake']
 
-        current_farthest_node = self.graph.farthest_node(snake_head)
-        current_farthest_path = self.graph.find_path(snake_head, current_farthest_node)
-        current_path_to_tail = self.graph.find_path(snake_head, snake_tail)
+        current_farthest_node = pathfinding.find_farthest_node(
+            self.graph,
+            snake_head
+        )
+        current_farthest_path = pathfinding.find_path(
+            self.graph,
+            snake_head,
+            current_farthest_node,
+        )
+        current_path_to_tail = pathfinding.find_path(
+            self.graph,
+            snake_head,
+            snake_tail,
+        )
 
         path = None
 
@@ -76,15 +87,23 @@ class DVA(object):
                 )
 
             if nearest_food_cost < nearest_snake_food_cost:
-                potential_path = self.graph.find_path(
+                potential_path = pathfinding.find_path(
+                    self.graph,
                     snake_head,
-                    nearest_food
+                    nearest_food,
                 )
 
             if potential_path:
                 future_coord = potential_path[0]
-                future_farthest_node = self.graph.farthest_node(future_coord)
-                future_farthest_path = self.graph.find_path(snake_head, future_farthest_node)
+                future_farthest_node = pathfinding.find_farthest_node(
+                    self.graph,
+                    future_coord
+                )
+                future_farthest_path = pathfinding.find_path(
+                    self.graph,
+                    snake_head,
+                    future_farthest_node,
+                )
 
                 if len(future_farthest_path) >= len(current_farthest_path) - 1:
                     path = potential_path
@@ -134,16 +153,8 @@ class DVA(object):
         # Update graph
         self.graph.update(self.BLACKBOARD)
 
-        nearest_snake = self.__find_nearest_snake()
-        nearest_food = self.__find_nearest_food()
-
-        if nearest_snake is not None:
-            self.BLACKBOARD['nearest_snake'] = nearest_snake
-
-        if nearest_food is not None:
-            self.BLACKBOARD['nearest_food'] = nearest_food
-
-        return
+        self.BLACKBOARD['nearest_snake'] = self.__find_nearest_snake()
+        self.BLACKBOARD['nearest_food'] = self.__find_nearest_food()
 
     def __find_nearest_snake(self):
         coord_1 = self.BLACKBOARD['snake']['coords'][0]
@@ -153,10 +164,10 @@ class DVA(object):
         for enemy_snake in enemy_snakes:
             enemy_snake_nodes.append(enemy_snake['coords'][0])
 
-        return self.graph.find_closest(coord_1, enemy_snake_nodes)
+        return pathfinding.find_closest_node(coord_1, enemy_snake_nodes)
 
     def __find_nearest_food(self):
-        food = self.BLACKBOARD['food']
         coord_1 = self.BLACKBOARD['snake']['coords'][0]
+        food = self.BLACKBOARD['food']
 
-        return self.graph.find_closest(coord_1, food)
+        return pathfinding.find_closest_node(coord_1, food)
