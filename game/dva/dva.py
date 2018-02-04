@@ -80,10 +80,9 @@ class DVA(object):
             potential_path = None
 
             if nearest_snake is not None:
-                nearest_snake_head = nearest_snake['coords'][0]
                 nearest_snake_food_cost = pathfinding.cost(
                     nearest_food,
-                    nearest_snake_head
+                    nearest_snake
                 )
 
             if nearest_food_cost < nearest_snake_food_cost:
@@ -153,10 +152,10 @@ class DVA(object):
         # Update graph
         self.graph.update(self.BLACKBOARD)
 
-        self.BLACKBOARD['nearest_snake'] = self.__find_nearest_snake()
-        self.BLACKBOARD['nearest_food'] = self.__find_nearest_food()
+        self.BLACKBOARD['nearest_snake'] = self.__find_nearest_snake_node()
+        self.BLACKBOARD['nearest_food'] = self.__find_nearest_food_node()
 
-    def __find_nearest_snake(self):
+    def __find_nearest_snake_node(self):
         coord_1 = self.BLACKBOARD['snake']['coords'][0]
         enemy_snakes = self.BLACKBOARD['enemy_snakes']
         enemy_snake_nodes = list()
@@ -166,7 +165,7 @@ class DVA(object):
 
         return pathfinding.find_closest_node(coord_1, enemy_snake_nodes)
 
-    def __find_nearest_food(self):
+    def __find_nearest_food_node(self):
         coord_1 = self.BLACKBOARD['snake']['coords'][0]
         food = self.BLACKBOARD['food']
 
