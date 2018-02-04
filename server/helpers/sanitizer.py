@@ -16,11 +16,11 @@ def sanitize_move_data(data):
         snake['coords'] = snake['body']['data']
 
         for index, coord in enumerate(snake['coords']):
-            snake['coords'][index] = [coord['x'], coord['y']]
+            snake['coords'][index] = (coord['x'], coord['y'])
 
     data['food'] = data['food']['data']
 
     for index, food in enumerate(data['food']):
-        data['food'][index] = [food['x'], food['y']]
+        data['food'][index] = (food['x'], food['y'])
 
     return data
