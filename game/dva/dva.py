@@ -135,13 +135,13 @@ class DVA(object):
         snakes = list()
         enemy_snakes = list()
 
-        for snake in data['snakes']:
-            if snake['id'] == data['you']:
-                snake = snake
+        for data_snake in data['snakes']:
+            if data_snake['id'] == data['you']:
+                snake = data_snake
             else:
-                enemy_snakes.append(snake)
+                enemy_snakes.append(data_snake)
 
-            snakes.append(snake)
+            snakes.append(data_snake)
 
         self.BLACKBOARD['id'] = data['you']
         self.BLACKBOARD['snake'] = snake
