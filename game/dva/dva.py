@@ -74,7 +74,7 @@ class DVA(object):
 
         path = None
 
-        if self.BLACKBOARD['snake']['health'] <= 50:
+        if self.BLACKBOARD['snake']['health'] <= 100:
             nearest_food_cost = pathfinding.heuristic(snake_head, nearest_food)
             nearest_snake_food_cost = sys.maxsize
             potential_path = None
@@ -85,7 +85,10 @@ class DVA(object):
                     nearest_snake
                 )
 
-            if nearest_food_cost < nearest_snake_food_cost:
+            if (
+                nearest_food_cost < nearest_snake_food_cost
+                or self.BLACKBOARD['snake']['health'] <= 50
+            ):
                 potential_path = pathfinding.find_path(
                     self.graph,
                     snake_head,
