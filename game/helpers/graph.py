@@ -4,7 +4,7 @@ import game.helpers.pathfinding as pathfinding
 
 class Graph(object):
     """Class representing a Graph"""
-    inaccessible_nodes = list()
+    grid = [[]]
     width = 0
     height = 0
 
@@ -12,15 +12,72 @@ class Graph(object):
         self.width = width
         self.height = height
 
+        self.grid = [[1 for x in range(width)] for y in range(height)]
+
     def update(self, blackboard):
         """Updates graph based on blackboard data"""
-        self.inaccessible_nodes = list()
+        self.grid = [[1 for x in range(self.width)] for y in range(self.height)]
 
-        for snake in blackboard['snakes']:
-            coords = snake['coords']
+        snake = blackboard['snake']
 
-            for i in range(len(coords) - 1):
-                self.inaccessible_nodes.append(coords[i])
+        for i in range(len(snake['coords']) - 1):
+            coord = snake['coords'][i]
+            self.grid[coord[0]][coord[1]] = 0
+
+        for enemy_snake in blackboard['enemy_snakes']:
+            coords = enemy_snake['coords']
+
+            for i in range(len(coords)):
+                coord = coords[i]
+                self.grid[coord[0]][coord[1]] = 0
+
+                if i == 0:
+                    tmp_coord = (coord[0], coord[1] + 1)
+                    if self.__is_node_in_bounds(tmp_coord):
+                        self.grid[tmp_coord[0]][tmp_coord[1]] = 999
+
+                    tmp_coord = (coord[0] + 1, coord[1] + 1)
+                    if self.__is_node_in_bounds(tmp_coord):
+                        self.grid[tmp_coord[0]][tmp_coord[1]] = 999
+
+                    tmp_coord = (coord[0], coord[1] - 1)
+                    if self.__is_node_in_bounds(tmp_coord):
+                        self.grid[tmp_coord[0]][tmp_coord[1]] = 999
+
+                    tmp_coord = (coord[0] - 1, coord[1] - 1)
+                    if self.__is_node_in_bounds(tmp_coord):
+                        self.grid[tmp_coord[0]][tmp_coord[1]] = 999
+
+                for j in range(5):
+                    j_index = coord[0] - 2 + j
+
+                    for k in range(3):
+                        k_index = coord[1] - 1 - k
+
+                        if self.__is_node_in_bounds((j_index, k_index)):
+                            cost = self.grid[j_index][k_index]
+                            potential_cost = 50 if k == 0 else 25
+
+                            if cost < potential_cost:
+                                self.grid[j_index][k_index] = potential_cost
+
+                    for k in range(3):
+                        k_index = coord[1] + 1 + k
+
+                        if self.__is_node_in_bounds((j_index, k_index)):
+                            cost = self.grid[j_index][k_index]
+                            potential_cost = 50 if k == 0 else 25
+
+                            if cost < potential_cost:
+                                self.grid[j_index][k_index] = potential_cost
+
+    def cost(self, node, direction):
+        target_node = (node[0] + direction[0], node[1] + direction[1])
+
+        if self.__is_node_in_bounds(target_node):
+            return self.grid[target_node[0]][target_node[1]]
+        else:
+            return 100
 
     def neighbors(self, node):
         """Returns a list of neighbors of the parameter node"""
@@ -39,8 +96,8 @@ class Graph(object):
         """Checks if a node is accessible"""
 
         return (
-            node not in self.inaccessible_nodes
-            and self.__is_node_in_bounds(node)
+            self.__is_node_in_bounds(node)
+            and self.grid[node[0]][node[1]] != 0
         )
 
     def __is_node_in_bounds(self, node):

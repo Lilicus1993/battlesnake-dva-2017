@@ -3,7 +3,7 @@
 import sys
 from queue import PriorityQueue
 
-def cost(node_1, node_2):
+def heuristic(node_1, node_2):
     """Determines the approximate cost going from one coord to another"""
 
     return abs(node_1[0] - node_2[0]) + abs(node_1[1] - node_2[1])
@@ -24,11 +24,12 @@ def a_star(graph, start_node, goal_node):
             break
 
         for next_node in graph.neighbors(current_node):
-            new_cost = cost_so_far[current_node] + cost(current_node, next_node)
+            direction = (next_node[0] - current_node[0], next_node[1] - current_node[1])
+            new_cost = cost_so_far[current_node] + graph.cost(current_node, direction)
 
             if next_node not in cost_so_far or new_cost < cost_so_far[next_node]:
                 cost_so_far[next_node] = new_cost
-                priority = new_cost
+                priority = new_cost + heuristic(current_node, next_node)
                 to_visit.put((priority, next_node))
                 came_from[next_node] = current_node
 
@@ -47,7 +48,7 @@ def find_closest_node(node_1, nodes):
         return lowest_cost_node
 
     for node_2 in nodes:
-        current_cost = cost(node_1, node_2)
+        current_cost = heuristic(node_1, node_2)
 
         if lowest_cost > current_cost:
             lowest_cost_node = node_2
@@ -62,7 +63,7 @@ def find_farthest_node(graph, node_1):
     highest_cost = 0
 
     for node_2 in nodes:
-        current_cost = cost(node_1, node_2)
+        current_cost = heuristic(node_1, node_2)
 
         if current_cost > highest_cost:
             highest_cost_node = node_2
