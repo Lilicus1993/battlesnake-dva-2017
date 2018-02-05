@@ -12,41 +12,41 @@ class Graph(object):
         self.width = width
         self.height = height
 
-        self.grid = [[1 for x in range(width)] for y in range(height)]
+        self.grid = [[1 for x in range(height)] for y in range(width)]
 
     def update(self, blackboard):
         """Updates graph based on blackboard data"""
-        self.grid = [[1 for x in range(self.width)] for y in range(self.height)]
+        self.grid = [[1 for x in range(self.height)] for y in range(self.width)]
 
         snake = blackboard['snake']
 
         for i in range(len(snake['coords']) - 1):
             coord = snake['coords'][i]
-            self.grid[coord[0]][coord[1]] = 0
+            self.grid[coord[0]][coord[1]] = 999
 
         for enemy_snake in blackboard['enemy_snakes']:
             coords = enemy_snake['coords']
 
             for i in range(len(coords)):
                 coord = coords[i]
-                self.grid[coord[0]][coord[1]] = 0
+                self.grid[coord[0]][coord[1]] = 999
 
                 if i == 0:
                     tmp_coord = (coord[0], coord[1] + 1)
                     if self.__is_node_in_bounds(tmp_coord):
-                        self.grid[tmp_coord[0]][tmp_coord[1]] = 999
+                        self.grid[tmp_coord[0]][tmp_coord[1]] = 500
 
                     tmp_coord = (coord[0] + 1, coord[1] + 1)
                     if self.__is_node_in_bounds(tmp_coord):
-                        self.grid[tmp_coord[0]][tmp_coord[1]] = 999
+                        self.grid[tmp_coord[0]][tmp_coord[1]] = 500
 
                     tmp_coord = (coord[0], coord[1] - 1)
                     if self.__is_node_in_bounds(tmp_coord):
-                        self.grid[tmp_coord[0]][tmp_coord[1]] = 999
+                        self.grid[tmp_coord[0]][tmp_coord[1]] = 500
 
                     tmp_coord = (coord[0] - 1, coord[1] - 1)
                     if self.__is_node_in_bounds(tmp_coord):
-                        self.grid[tmp_coord[0]][tmp_coord[1]] = 999
+                        self.grid[tmp_coord[0]][tmp_coord[1]] = 500
 
                 for j in range(5):
                     j_index = coord[0] - 2 + j
@@ -77,7 +77,7 @@ class Graph(object):
         if self.__is_node_in_bounds(target_node):
             return self.grid[target_node[0]][target_node[1]]
         else:
-            return 100
+            return 999
 
     def neighbors(self, node):
         """Returns a list of neighbors of the parameter node"""
@@ -97,7 +97,7 @@ class Graph(object):
 
         return (
             self.__is_node_in_bounds(node)
-            and self.grid[node[0]][node[1]] != 0
+            and self.grid[node[0]][node[1]] != 999
         )
 
     def __is_node_in_bounds(self, node):
